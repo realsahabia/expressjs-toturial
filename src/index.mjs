@@ -3,6 +3,48 @@ import express from "express";
 // start the express the app
 const app = express();
 
+const testUsers = [
+    {
+        id: 1,
+        name: 'John',
+        age: 25,
+        email:'john@gmail.com',
+    },
+    {
+        id: 2,
+        name: 'Karim',
+        age: 20,
+        email:'karim@gmail.com',
+    },
+    {
+        id: 3,
+        name: 'Asana',
+        age: 30,
+        email:'asana@gmail.com',
+    },
+];
+
+const testProducts = [
+    {
+        id: 1,
+        name: 'rice cooker',
+        price: 25,
+        brand:'Binatone',
+    },
+    {
+        id: 2,
+        name: 'baker',
+        price: 25,
+        brand:'Nasco',
+    },
+    {
+        "id": 3,
+        name: 'stove',
+        price: 25,
+        brand:'Akai',
+    },
+];
+
 // Get a port
 let PORT = process.env.PORT || 3000;
 
@@ -14,47 +56,35 @@ app.get("/", (req, res) =>{
 
 app.get("/api/users", (req, res) =>{
     // send a respose of user
-    res.status(201).send([
-        {
-            name: 'John',
-            age: 25,
-            email:'john@gmail.com',
-        },
-        {
-            name: 'Karim',
-            age: 20,
-            email:'karim@gmail.com',
-        },
-        {
-            name: 'Asana',
-            age: 30,
-            email:'asana@gmail.com',
-        },
-    ])
+    res.status(201).send(testUsers);
 })
 
 app.get("/api/products", (req, res) =>{
     // send a respose of user
-    res.status(201).send([
-        {
-            name: 'rice cooker',
-            price: 25,
-            brand:'Binatone',
-        },
-        {
-            name: 'baker',
-            price: 25,
-            brand:'Nasco',
-        },
-        {
-            name: 'stove',
-            price: 25,
-            brand:'Akai',
-        },
-    ])
+    res.status(201).send(testProducts);
 })
 
-// 
+// setting route params
+app.get("/api/users/:id", (req, res) =>{
+    // console.log(req.params);
+
+    // convert ids to actual numbers
+    const parsedId = parseInt(req.params.id);
+
+    if (isNaN(parsedId)){
+        return res.status(400).send({
+            msg: "Bad request. Invalid ID"
+    })
+    }
+
+    const findUser = testUsers.find((user) => user.id === parsedId);
+
+    if (!findUser) {
+        return res.status(404).sendStatus(404);
+    }
+
+    return res.send(findUser);  
+})
 
 // start the server
 app.listen(PORT, () => {
