@@ -22,6 +22,24 @@ const testUsers = [
         age: 30,
         email:'asana@gmail.com',
     },
+    {
+        id: 4,
+        name: 'Esther',
+        age: 25,
+        email:'esther@gmail.com',
+    },
+    {
+        id: 5,
+        name: 'sahabia',
+        age: 20,
+        email:'sahabia@gmail.com',
+    },
+    {
+        id: 6,
+        name: 'Luyana',
+        age: 30,
+        email:'luyana@gmail.com',
+    },
 ];
 
 const testProducts = [
@@ -55,8 +73,19 @@ app.get("/", (req, res) =>{
 });
 
 app.get("/api/users", (req, res) =>{
+    console.log(req.query);
+
+    // destructure query
+    const {query: { filter, value}} = req;
+
+    if (filter && value) {
+        res.send(
+            testUsers.filter((user)=> user[filter].includes(value))
+        )
+    }
+
     // send a respose of user
-    res.status(201).send(testUsers);
+    return res.send(testUsers);
 })
 
 app.get("/api/products", (req, res) =>{
