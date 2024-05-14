@@ -2,6 +2,7 @@ import express from "express";
 
 // start the express the app
 const app = express();
+app.use(express.json());
 
 const testUsers = [
     {
@@ -119,3 +120,15 @@ app.get("/api/users/:id", (req, res) =>{
 app.listen(PORT, () => {
     console.log(`Application is running on port ${PORT}`);
 });
+
+// poating a request to the server
+app.post("/api/users", (req, res) =>{
+    console.log(req.body);
+
+    const {body} = req;
+
+    const newUser = { id: testUsers[testUsers.length - 1].id + 1,  ...body}
+    testUsers.push(newUser);
+
+    return res.status(200).send(newUser);
+})
