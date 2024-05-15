@@ -1,9 +1,11 @@
 import express from "express";
 import routes from "./routes/index.mjs";
+import cookieParser from "cookie-parser";
 
 // start the express app
 const app = express();
 app.use(express.json());
+app.use(cookieParser("helloworld"));
 app.use(routes);
 
 // middleware
@@ -23,7 +25,7 @@ app.listen(PORT, () => {
 // create routes with the GET request
 app.get("/", (req, res) =>{
     // send a respose
-    res.cookie("hello", "world", {maxAge: 60000 * 60})
+    res.cookie("hello", "world", {maxAge: 60000, signed: true})
     res.send("Hello World!");
 });
 
