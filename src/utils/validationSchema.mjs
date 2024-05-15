@@ -16,10 +16,10 @@ export const createUserValidationSchema = {
     },
     age: {
         isNumeric: {
-            errorMessage: "must be a number"
+            errorMessage: "age must be a number"
         },
         notEmpty: {
-            errorMessage: "must not be empty"
+            errorMessage: "age must not be empty"
         }
     }
 }
