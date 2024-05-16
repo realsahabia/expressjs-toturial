@@ -2,7 +2,9 @@ import express from "express";
 import routes from "./routes/index.mjs";
 import cookieParser from "cookie-parser";
 import session from "express-session";
-import { testUsers } from "./utils/constants.mjs";
+// import { testUsers } from "./utils/constants.mjs";
+import passport from "passport";
+import "./strategies/local-strategy.mjs";
 
 // start the express app
 const app = express();
@@ -16,7 +18,11 @@ app.use(session({
         maxAge: 60000 * 60
     }
 }));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(routes);
+
+
 
 // middleware
 const loggingMiddleware = (req, res, next) => {
@@ -42,24 +48,33 @@ app.get("/", (req, res) =>{
     res.send("Hello World!");
 });
 
-app.post("/api/auth", (req, res) =>{
-    const {
-        body: {name, password}
-    } = req;
+app.post("/api/auth",  
+passport.authenticate("local"), 
+(req, res) =>{
+    res.sendStatus(200);
+});
 
-    const findUser = testUsers.find((user) => user.name === name);
+// app.post("/api/auth", (req, res) =>{
+//     const {
+//         body: {name, password}
+//     } = req;
 
-    if (!findUser || findUser.password !== password) return res.status(401).send({ msg: "BAD CREDENTIALS"});
+//     const findUser = testUsers.find((user) => user.name === name);
 
-    req.session.user = findUser;
+//     if (!findUser || findUser.password !== password) return res.status(401).send({ msg: "BAD CREDENTIALS"});
 
-    return res.status(200).send(findUser);
-})
+//     req.session.user = findUser;
+
+//     return res.status(200).send(findUser);
+// })
 
 app.get("/api/auth/status", (req, res) =>{
-    return req.session.user 
-    ? res.status(200).send( req.session.user ) 
-    : res.status(401).send({ msg: "UNAUTHORIZED" });
+    console.log(`Inside  /auth/status endpoint`)
+    console.log(req.user);
+
+    return req.user 
+    ? res.send( req.user ) 
+    : res.sendStatus(401);
 })
 
 
