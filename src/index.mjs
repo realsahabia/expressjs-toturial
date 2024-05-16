@@ -1,11 +1,21 @@
 import express from "express";
 import routes from "./routes/index.mjs";
 import cookieParser from "cookie-parser";
+import session from "express-session";
+import { testUsers } from "./utils/constants.mjs";
 
 // start the express app
 const app = express();
 app.use(express.json());
 app.use(cookieParser("helloworld"));
+app.use(session({
+    secret: 'karim the dev',
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+        maxAge: 60000 * 60
+    }
+}));
 app.use(routes);
 
 // middleware
@@ -24,11 +34,33 @@ app.listen(PORT, () => {
 
 // create routes with the GET request
 app.get("/", (req, res) =>{
+    console.log(req.session);
+    console.log(req.session.id);
+
     // send a respose
     res.cookie("hello", "world", {maxAge: 60000, signed: true})
     res.send("Hello World!");
 });
 
+app.post("/api/auth", (req, res) =>{
+    const {
+        body: {name, password}
+    } = req;
+
+    const findUser = testUsers.find((user) => user.name === name);
+
+    if (!findUser || findUser.password !== password) return res.status(401).send({ msg: "BAD CREDENTIALS"});
+
+    req.session.user = findUser;
+
+    return res.status(200).send(findUser);
+})
+
+app.get("/api/auth/status", (req, res) =>{
+    return req.session.user 
+    ? res.status(200).send( req.session.user ) 
+    : res.status(401).send({ msg: "UNAUTHORIZED" });
+})
 
 
 
